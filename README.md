@@ -3,6 +3,8 @@
 
 # Messaging Layer on Storj Platform by Telehash
 
+Explanation about messaging layer is [here](Messaging.md).
+
 ## Requirements
 This requires 
 * `g++` (v4.8 or higher for test)
@@ -21,7 +23,7 @@ To run the associated tests:
 
 To run the associated tests for python:
 
-    $ python  setup.py test -a "--doctest-modules --pep8 -v tests/ storj/messaging/ storj/messaging/storjtelehash/"
+    $ python  setup.py test -a "--doctest-modules --pep8 -v tests/"
 
 
 for Windows OS, [Cygwin](https://www.cygwin.com/) must be installed first.
@@ -45,10 +47,6 @@ under Python category:
 After that run c:\cygwin\cygwin.bat, where you can install and run StorjTelehash.
 
 ## Usage
-
-Explanation about messaging layer is [here](Messaging.md).
-
-API Document for abstract messaging layer is [here](https://rawgit.com/StorjPlatform/StorjTelehash/master/docs/html/messaging.html)
 
 API Document for storjtelehash , which is concorete implementation of abstract messaging layer by telehash-c ,
 is [here](https://rawgit.com/StorjPlatform/StorjTelehash/master/docs/html/storjtelehash.html)

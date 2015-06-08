@@ -101,30 +101,6 @@
     <span class="k">pass</span>
 
 </div>
-<div class="viewcode-block" id="add_broadcaster"><a class="viewcode-back" href="../telehashbinder.html#telehashbinder.add_broadcaster">[docs]</a><span class="k">def</span> <span class="nf">add_broadcaster</span><span class="p">(</span><span class="n">cobj</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">add</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    send a broadcast request to broadcaster.</span>
-<span class="sd">    After calling this method, broadcast messages will be send continually.</span>
-
-<span class="sd">    :param Object cobj: pointer of StorjTelehash instnace returned by init()</span>
-<span class="sd">    :param str location: json str where you want to request a broadcast.</span>
-<span class="sd">    :param  int add: if 0, request to not to  broadcast. request to broaadcast</span>
-<span class="sd">                     if others.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">pass</span>
-
-</div>
-<div class="viewcode-block" id="broadcast"><a class="viewcode-back" href="../telehashbinder.html#telehashbinder.broadcast">[docs]</a><span class="k">def</span> <span class="nf">broadcast</span><span class="p">(</span><span class="n">cobj</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    broadcast a message.</span>
-
-<span class="sd">    :param Object cobj: pointer of StorjTelehash instnace returned by init()</span>
-<span class="sd">    :param str location: json str where you want to send a broadcast.</span>
-<span class="sd">    :param str message: broadcast message.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">pass</span>
-
-</div>
 <div class="viewcode-block" id="start"><a class="viewcode-back" href="../telehashbinder.html#telehashbinder.start">[docs]</a><span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="n">cobj</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    star to receive netowrk packets in the current thread..</span>
@@ -154,25 +130,6 @@
     <span class="k">pass</span>
 
 </div>
-<div class="viewcode-block" id="set_gc"><a class="viewcode-back" href="../telehashbinder.html#telehashbinder.set_gc">[docs]</a><span class="k">def</span> <span class="nf">set_gc</span><span class="p">(</span><span class="n">cobj</span><span class="p">,</span> <span class="n">use</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    set  GC to stop or not. test use only. don&#39;t use it.</span>
-
-<span class="sd">    :param Object cobj: pointer of StorjTelehash instnace returned by init()</span>
-<span class="sd">    :param int use:  0 if you do not want to use. others if not.</span>
-<span class="sd">     &quot;&quot;&quot;</span>
-    <span class="k">pass</span>
-
-</div>
-<div class="viewcode-block" id="gcollect"><a class="viewcode-back" href="../telehashbinder.html#telehashbinder.gcollect">[docs]</a><span class="k">def</span> <span class="nf">gcollect</span><span class="p">(</span><span class="n">cobj</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    run force garbage collect.</span>
-
-<span class="sd">    :param Object cobj: pointer of StorjTelehash instnace returned by init()</span>
-<span class="sd">     &quot;&quot;&quot;</span>
-    <span class="k">pass</span>
-
-</div>
 <div class="viewcode-block" id="get_my_location"><a class="viewcode-back" href="../telehashbinder.html#telehashbinder.get_my_location">[docs]</a><span class="k">def</span> <span class="nf">get_my_location</span><span class="p">(</span><span class="n">cobj</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     return my location information. format is:</span>
@@ -182,6 +139,27 @@
 
 <span class="sd">     :param Object cobj: pointer of StorjTelehash instnace returned by init()</span>
 <span class="sd">     :return: location info.</span>
+<span class="sd">     &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+</div>
+<div class="viewcode-block" id="get_my_id"><a class="viewcode-back" href="../telehashbinder.html#telehashbinder.get_my_id">[docs]</a><span class="k">def</span> <span class="nf">get_my_id</span><span class="p">(</span><span class="n">cobj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    return my id information. format is:</span>
+<span class="sd">    jlde3uibwflz4hqnk4zehvj5o5kd4goyqtrwqwhiotw6n4qtrf2a</span>
+
+<span class="sd">    :param Object cobj: pointer of StorjTelehash instnace returned by init()</span>
+<span class="sd">    :return: id info.</span>
+<span class="sd">     &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+</div>
+<div class="viewcode-block" id="ping"><a class="viewcode-back" href="../telehashbinder.html#telehashbinder.ping">[docs]</a><span class="k">def</span> <span class="nf">ping</span><span class="p">(</span><span class="n">cobj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    open ping channel. expect a global ip address.</span>
+
+<span class="sd">    :param str location: destination to ping.</span>
+<span class="sd">    :return: id info.</span>
 <span class="sd">     &quot;&quot;&quot;</span>
     <span class="k">pass</span></div>
 </pre></div>

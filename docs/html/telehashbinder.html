@@ -27,7 +27,7 @@
     <script type="text/javascript" src="_static/bizstyle.js"></script>
     <link rel="top" title=".  documentation" href="index.html" />
     <link rel="next" title="messaging module" href="messaging.html" />
-    <link rel="prev" title="storjtelehash module" href="storjtelehash.html" />
+    <link rel="prev" title="Welcome to .’s documentation!" href="index.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
@@ -47,7 +47,7 @@
           <a href="messaging.html" title="messaging module"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="storjtelehash.html" title="storjtelehash module"
+          <a href="index.html" title="Welcome to .’s documentation!"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">.  documentation</a> &raquo;</li> 
       </ul>
@@ -55,8 +55,8 @@
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="storjtelehash.html"
-                        title="previous chapter">storjtelehash module</a></p>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to .&#8217;s documentation!</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="messaging.html"
                         title="next chapter">messaging module</a></p>
@@ -92,46 +92,6 @@
 <span id="telehashbinder-module"></span><h1>telehashbinder module<a class="headerlink" href="#module-telehashbinder" title="Permalink to this headline">¶</a></h1>
 <p>telehash binder implmeneted in C++.</p>
 <dl class="function">
-<dt id="telehashbinder.add_broadcaster">
-<code class="descclassname">telehashbinder.</code><code class="descname">add_broadcaster</code><span class="sig-paren">(</span><em>cobj</em>, <em>location</em>, <em>add</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/telehashbinder.html#add_broadcaster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#telehashbinder.add_broadcaster" title="Permalink to this definition">¶</a></dt>
-<dd><p>send a broadcast request to broadcaster.
-After calling this method, broadcast messages will be send continually.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>cobj</strong> (<em>Object</em>) &#8211; pointer of StorjTelehash instnace returned by init()</li>
-<li><strong>location</strong> (<em>str</em>) &#8211; json str where you want to request a broadcast.</li>
-<li><strong>add</strong> (<em>int</em>) &#8211; if 0, request to not to  broadcast. request to broaadcast
-if others.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="telehashbinder.broadcast">
-<code class="descclassname">telehashbinder.</code><code class="descname">broadcast</code><span class="sig-paren">(</span><em>cobj</em>, <em>location</em>, <em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/telehashbinder.html#broadcast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#telehashbinder.broadcast" title="Permalink to this definition">¶</a></dt>
-<dd><p>broadcast a message.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>cobj</strong> (<em>Object</em>) &#8211; pointer of StorjTelehash instnace returned by init()</li>
-<li><strong>location</strong> (<em>str</em>) &#8211; json str where you want to send a broadcast.</li>
-<li><strong>message</strong> (<em>str</em>) &#8211; broadcast message.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
 <dt id="telehashbinder.finalize">
 <code class="descclassname">telehashbinder.</code><code class="descname">finalize</code><span class="sig-paren">(</span><em>cobj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/telehashbinder.html#finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#telehashbinder.finalize" title="Permalink to this definition">¶</a></dt>
 <dd><p>destructor.
@@ -147,14 +107,17 @@ delete factory, StorjTelehash instnace, and broadcasthandler.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="telehashbinder.gcollect">
-<code class="descclassname">telehashbinder.</code><code class="descname">gcollect</code><span class="sig-paren">(</span><em>cobj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/telehashbinder.html#gcollect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#telehashbinder.gcollect" title="Permalink to this definition">¶</a></dt>
-<dd><p>run force garbage collect.</p>
+<dt id="telehashbinder.get_my_id">
+<code class="descclassname">telehashbinder.</code><code class="descname">get_my_id</code><span class="sig-paren">(</span><em>cobj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/telehashbinder.html#get_my_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#telehashbinder.get_my_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>return my id information. format is:
+jlde3uibwflz4hqnk4zehvj5o5kd4goyqtrwqwhiotw6n4qtrf2a</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cobj</strong> (<em>Object</em>) &#8211; pointer of StorjTelehash instnace returned by init()</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">id info.</td>
 </tr>
 </tbody>
 </table>
@@ -221,18 +184,16 @@ called every time when receiving packets.</li>
 </dd></dl>
 
 <dl class="function">
-<dt id="telehashbinder.set_gc">
-<code class="descclassname">telehashbinder.</code><code class="descname">set_gc</code><span class="sig-paren">(</span><em>cobj</em>, <em>use</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/telehashbinder.html#set_gc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#telehashbinder.set_gc" title="Permalink to this definition">¶</a></dt>
-<dd><p>set  GC to stop or not. test use only. don&#8217;t use it.</p>
+<dt id="telehashbinder.ping">
+<code class="descclassname">telehashbinder.</code><code class="descname">ping</code><span class="sig-paren">(</span><em>cobj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/telehashbinder.html#ping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#telehashbinder.ping" title="Permalink to this definition">¶</a></dt>
+<dd><p>open ping channel. expect a global ip address.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>cobj</strong> (<em>Object</em>) &#8211; pointer of StorjTelehash instnace returned by init()</li>
-<li><strong>use</strong> (<em>int</em>) &#8211; 0 if you do not want to use. others if not.</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>location</strong> (<em>str</em>) &#8211; destination to ping.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">id info.</td>
 </tr>
 </tbody>
 </table>
@@ -291,7 +252,7 @@ called every time when receiving packets.</li>
           <a href="messaging.html" title="messaging module"
              >next</a> |</li>
         <li class="right" >
-          <a href="storjtelehash.html" title="storjtelehash module"
+          <a href="index.html" title="Welcome to .’s documentation!"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">.  documentation</a> &raquo;</li> 
       </ul>
