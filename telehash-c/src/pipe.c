@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include "util.h"
 #include "pipe.h"
-#include "tgc.h"
 
 pipe_t pipe_new(char *type)
 {
@@ -23,6 +22,7 @@ pipe_t pipe_free(pipe_t p)
   if(p->id) free(p->id);
   if(p->path) lob_free(p->path);
   if(p->notify) LOG("pipe free'd leaking notifications");
+  if(p->free) p->free(p);
   free(p);
   return NULL;
 }

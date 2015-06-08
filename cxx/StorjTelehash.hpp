@@ -37,14 +37,7 @@
 extern "C"{
 	#include "mesh.h"
     #include "net_udp4.h"
-    #include "tgc.h"
 }
-
-#ifndef __NO_TGC__
-extern "C"{
-	#include "tgc.h"
-}
-#endif
 
 using namespace std;
 
@@ -118,37 +111,6 @@ private:
     int stopFlag;
 
     /**
-     * link status flag for detecting it while reading packets.
-     */
-    static int status;
-
-    /**
-     * link status flag for detecting it while reading packets.
-     */
-    static int count;
-
-    /**
-     * target for detecting a link while reading packets.
-     */
-    static link_t targetLink;
-
-    /**
-     * determin whethere adr is local or not.
-     * 
-     * @param adr address to be checked.
-     * @return 0 if global IP, others if local IP.
-     */
-    int isLocal(char *adr);
-
-    /**
-     * try to get global IP from ethernet IF. 
-     * 
-     * @param global ip would be stored if found.
-     * @return pointer of ip.
-     */
-    char *getGlobalIP(char *ip);
-
-    /**
      * make id.json, where key and hashname is stored.
      * 
      * @return 0 if failed, others if success.
@@ -162,89 +124,8 @@ private:
      */
     link_t _link(char *location);
 
-    /**
-     * called when receving one packet on a channel.
-     * call ChannelHandler.handle() and send back handle()'s result.
-     * called from serviceOnOpenHandler() and serviceOnOpen().
-     * 
-     * @param link link used in this channel.
-     * @param chan channel
-     * @param packet paccket that is sent.
-     * @param c ChannelHandler instance.
-     */
-    void static sendOnChannel(link_t link, e3x_channel_t chan,
-                                      lob_t packet,ChannelHandler *c);
-                                          
-    /**
-     * handler called when finishing making a link. 
-     * (an argument in mesh_on_link())
-     * 
-     * @param link link
-     */
-    static void onLink(link_t link);
 
-    /**
-     * handler called when opening a channel. intend to be called when 
-     * requested a general channel. 
-     * (an argument in mesh_on_open())
-     * 
-     * @param link link used in this channel.
-     * @param open packet content.
-     * @return NULL if channel is processed in this handler. open if not.
-     */
-    static lob_t serviceOnOpen(link_t link,lob_t open);
-
-    /**
-     * handler when requested to add broadcastee.
-     * (an argument in mesh_on_open())
-     * 
-     * @param link link used in this channel.
-     * @param open packet content.
-     * @return NULL if channel is processed in this handler. open if not.
-     */
-    static lob_t signupOnOpen(link_t link,lob_t open);
-
-    /**
-     * handler when receiving a broadcaste.
-     * (an argument in mesh_on_open())
-     * 
-     * @param link link used in this channel.
-     * @param open packet content.
-     * @return NULL if channel is processed in this handler. open if not.
-     */
-    static lob_t broadcastOnOpen(link_t link,lob_t open);
-
-    /**
-     * handler when receiving a return of request to add broadcastee.
-     * receive IP address and store it.
-     * called from addBroadcaster().
-     * 
-     * @param link link used in this channel.
-     * @param chan channel.
-     * @param arg not used. NULL.
-    */
-    static void addBroadcasterHandler(link_t link, e3x_channel_t chan, 
-        void *arg);
-
-    /**
-     * handler when receiving a return of opening channel and sending a 
-     * message to a channel.
-     * called from openChannel() and serviceOnOpen().
-     * 
-     * @param link link used in this channel.
-     * @param chan channel.
-     * @param arg ChannelHandler instance.
-     */
-    static void serviceOnOpenHandler(link_t link, e3x_channel_t chan, 
-        void *arg);
-    
 public:
-    /**
-     * global IP address, if found.
-     * try to retrieve from ethere IF and return of addBroadcast().
-     */
-    static char globalIP[3*4+3+1];
-
     /**
      * constructor.
      * 
@@ -255,10 +136,8 @@ public:
      * @param port port number to be listened packets. if 0, port number is 
      *         selected randomly.
      * @param factory ChannelHanderFactory instance.
-     * @param broadcastHandler ChannelHandler instnace for handlinkg broadcasts 
      */
-    StorjTelehash(int port,ChannelHandlerFactory &factory, 
-                      ChannelHandler& broadcastHandler);
+    StorjTelehash(int port,ChannelHandlerFactory &factory);
 
     /**
      * get registered ChannelHandlerFactory.
@@ -267,12 +146,6 @@ public:
      */
     ChannelHandlerFactory* getChannelHandlerFactory();
 
-    /**
-     * get registered ChannelHandler instance for handlinb broadcast.
-     * 
-     * @return registered broadcast ChannelHandler
-     */
-    ChannelHandler* getBroadcastHandler();
 
     /**
      * destructor.
@@ -314,24 +187,6 @@ public:
     void openChannel(char *location, char *name, ChannelHandler &h);
 
     /**
-     * 
-     * add/remove a broadcaster. broadcast messages will be sent from here 
-     * after adding a broadcaster.
-     * 
-     * @param location broadcaster location.
-     * @param add 0 if removing. others if adding.
-     */
-    void addBroadcaster(char *location,int add);
-
-    /**
-     * broadcast a packet.
-     * 
-     * @param location first node to be broadcasted.
-     * @param json packet to be broadcasted.
-     */
-    void broadcast(char *location, char *json);
-
-    /**
      * start receiving packet loop.
      * 
      */
@@ -345,16 +200,16 @@ public:
     void setStopFlag(int flag);
 
     /**
-     * run garbage collection.
-     * You must go out from functions in telehash-c library and 
-     * stop all threads before calling this method. 
-     */
-    static void gcollect();
-
-    /**
      * test use only. don't use it.
      * @return address to be tested.
      */
     int _isLocalTest(char *addr);
+
+    /**
+     * open ping channel. expect a global ip address.
+     * 
+     * @param location destination to ping.
+     */
+    void ping(char *location);
 };
 #endif

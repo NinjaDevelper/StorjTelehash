@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "util.h"
-#include "tgc.h"
 
 // a default prime number for the internal hashtable used to track all active hashnames/lines
 #define MAXPRIME 4211
@@ -13,7 +12,7 @@ typedef struct on_struct
 {
   char *id; // used to store in index
   
-  void (*freee)(mesh_t mesh); // relese resources
+  void (*free)(mesh_t mesh); // relese resources
   void (*link)(link_t link); // when a link is created, and again when exchange is created
   pipe_t (*path)(link_t link, lob_t path); // convert path->pipe
   lob_t (*open)(link_t link, lob_t open); // incoming channel requests
@@ -38,9 +37,29 @@ mesh_t mesh_new(uint32_t prime)
   if(!mesh->index) return mesh_free(mesh);
   
   LOG("mesh created version %d.%d.%d",TELEHASH_VERSION_MAJOR,TELEHASH_VERSION_MINOR,TELEHASH_VERSION_PATCH);
-  tgc_addRoot(mesh);
   return mesh;
 }
+
+typedef struct found_ {
+    const char *id;
+    pipe_t pipe;
+} found;
+
+void _mesh_find_pipe(xht_t h, const char *key, void *val, enum TYPE type,void *arg){
+    found *f = (found *)arg;
+    if(f->pipe || type != LINK) return;
+    link_t l = (link_t)val;
+    f->pipe = link_find_pipe(l, f->id);
+}
+
+pipe_t mesh_find_pipe(mesh_t mesh, const char *id){
+    found f;
+    memset(&f, 0, sizeof(found));
+    f.id = id;
+    xht_walk(mesh->index, _mesh_find_pipe,&f);
+    return f.pipe;
+}
+    
 
 mesh_t mesh_free(mesh_t mesh)
 {
@@ -52,11 +71,11 @@ mesh_t mesh_free(mesh_t mesh)
   {
     on = mesh->on;
     mesh->on = on->next;
-    if(on->freee) on->freee(mesh);
+    if(on->free) on->free(mesh);
     free(on->id);
     free(on);
   }
-
+  xht_walk(mesh->index, xht_free_walk,NULL);
   xht_free(mesh->index);
   lob_free(mesh->keys);
   lob_free(mesh->paths);
@@ -64,8 +83,9 @@ mesh_t mesh_free(mesh_t mesh)
   if(mesh->uri) free(mesh->uri);
   if(mesh->ipv4_local) free(mesh->ipv4_local);
   if(mesh->ipv4_public) free(mesh->ipv4_public);
-
-  tgc_rmRoot(mesh);
+  lob_freeall(mesh->cached);
+  lob_freeall(mesh->handshakes);
+  hashname_free(mesh->id);
   free(mesh);
   return NULL;
 }
@@ -165,6 +185,7 @@ link_t mesh_add(mesh_t mesh, lob_t json, pipe_t pipe)
   // handle any pipe/paths
   if(pipe) link_pipe(link, pipe);
   for(;paths;paths = paths->next) link_path(link,paths);
+  lob_free(keys);
 
   return link;
 }
@@ -193,10 +214,10 @@ on_t on_get(mesh_t mesh, char *id)
   return on;
 }
 
-void mesh_on_free(mesh_t mesh, char *id, void (*freee)(mesh_t mesh))
+void mesh_on_free(mesh_t mesh, char *id, void (*free)(mesh_t mesh))
 {
   on_t on = on_get(mesh, id);
-  if(on) on->freee = freee;
+  if(on) on->free = free;
 }
 
 void mesh_on_path(mesh_t mesh, char *id, pipe_t (*path)(link_t link, lob_t path))
@@ -343,7 +364,7 @@ link_t mesh_receive_handshake(mesh_t mesh, lob_t handshake, pipe_t pipe)
   }
 
   // always add to the front of the cached list if needed in the future
-  mesh->cached = lob_unshift(mesh->cached, handshake);
+  mesh->cached = lob_unshift(mesh->cached, lob_deep_copy(handshake));
 
   // tell anyone listening about the newly discovered handshake
   mesh_discover(mesh, handshake, pipe);
@@ -397,6 +418,8 @@ uint8_t mesh_receive(mesh_t mesh, lob_t outer, pipe_t pipe)
 
     // process the handshake
     uint8_t ret= mesh_receive_handshake(mesh, inner, pipe) ? 0 : 3;
+    lob_unlink(inner);
+    lob_free(inner);
     return ret;
   }
 
@@ -413,7 +436,6 @@ uint8_t mesh_receive(mesh_t mesh, lob_t outer, pipe_t pipe)
     if(!link)
     {
       LOG("dropping, no link for token %s",hex);
-      lob_free(outer);
       return 6;
     }
 
@@ -421,17 +443,16 @@ uint8_t mesh_receive(mesh_t mesh, lob_t outer, pipe_t pipe)
     if(!inner)
     {
       LOG("channel decryption fail for link %s %s",link->id->hashname,e3x_err());
-      lob_free(outer);
       return 7;
     }
     
     LOG("channel packet %d bytes from %s",lob_len(inner),link->id->hashname);
     uint8_t ret= link_receive(link,inner,pipe) ? 0 : 8;
+    lob_free(inner);
     return ret;
     
   }
   
   LOG("dropping unknown outer packet with header %d %s",outer->head_len,lob_json(outer));
-  lob_free(outer);
   return 10;
 }

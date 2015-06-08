@@ -3,7 +3,6 @@
 #include <string.h>
 #include "e3x.h"
 #include "util.h"
-#include "tgc.h"
 
 // make a new exchange
 // packet must contain the raw key in the body
@@ -107,7 +106,7 @@ uint32_t e3x_exchange_out(e3x_exchange_t x, uint32_t at)
       if(x->out % 2 == 0) x->out++;
     }
   }
-  
+
   return x->out;
 }
 

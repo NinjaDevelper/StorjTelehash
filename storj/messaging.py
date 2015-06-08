@@ -27,11 +27,14 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from abc import ABCMeta, abstractmethod
 import types
-import pkgutil
-
+import threading
 import logging
+import time
+
+from . import telehashbinder
+# import telehashbinder #for creating document
+
 log_fmt = '%(filename)s:%(lineno)d %(funcName)s() %(message)s'
 logging.basicConfig(level=logging.DEBUG, format=log_fmt)
 
@@ -115,32 +118,62 @@ class ChannelHandler(object):
         return r
 
 
-class Messaging(object):
+class StorjTelehash(object):
     """
-    Abstract layer of Storj messaging.
-    Every class handling Storj messaging must inherit it.
-    """
-    __metaclass__ = ABCMeta
-
-    DESCRIPTION = ''
-    """
-    description about this messaging implementation which is
-    ued in sublcass.
+    Concrete Messaging layer for Storj Platform in Telehash.
+    Everything in telehash-C is not thread safe. So run function after
+    stop a thread, and run a thread again in all functions.
     """
 
-    def __init__(self, broadcastHandler, **keywords):
+    DESCRIPTION = 'messaging layer in telehach'
+    """ description about this messaging implementation which is
+    used in sublcass.
+    """
+
+    def __init__(self, port=0):
         """
-   　　　　　init.
+        init
 
-       :param ChannelHandler broadcastHandler: a received packet to be handled.
-       do nothing to this parameter.
+        :param int port: port number to be listened packets.
+                                  if 0, port number is seletcted randomly.
         """
+        self.cobj = telehashbinder.init(port, self.get_channel_handler)
+        self.start_thread()
         self.channel_factories = {}
+
+    def get_my_location(self):
+        """
+        return my location information. format is:
+         {"keys":{"1a":"al45izsjxe2sikv7mc6jpnwywybbkqvsou"},
+        paths":[{"type":"udp4","ip":"127.0.0.1","port":1234}]
+
+         :return: location info.
+        """
+        return telehashbinder.get_my_location(self.cobj)
+
+    def get_my_id(self):
+        """
+        return my id information. format is:
+        jlde3uibwflz4hqnk4zehvj5o5kd4goyqtrwqwhiotw6n4qtrf2a
+
+        :param Object cobj: pointer of StorjTelehash instnace returned
+                            by init()
+        :return: id info.
+        """
+        return telehashbinder.get_my_id(self.cobj)
+
+    def start_thread(self):
+        """star to receive netowrk packets in a thread. """
+
+        telehashbinder.set_stopflag(self.cobj, 0)
+        self.thread = threading.Thread(
+            target=lambda: telehashbinder.start(self.cobj))
+        self.thread.setDaemon(True)
+        self.thread.start()
 
     def add_channel_handler(self, channel_name, factory):
         """
         add ChannelHandler class object and associate it with a channel name.
-
         :param Class handler_class: ChannelHandler class to be associated
                                     with
         :param method factory: factory method called  when creating
@@ -164,61 +197,39 @@ class Messaging(object):
 
         return h.handle
 
-    @abstractmethod
     def open_channel(self, location, name, handler):
         """
         open a channel with a handler.
-        This method must be overwritten.
 
         :param str location: json str where you want to open a channel.
         :param str name: channel name that you want to open .
         :param ChannelHandler handler: channel handler.
         """
-        pass
+        if isinstance(handler, ChannelHandler):
+            telehashbinder.set_stopflag(self.cobj, 1)
+            self.thread.join()
+            telehashbinder.open_channel(self.cobj, location, name,
+                                        handler.handle)
+            self.start_thread()
+        else:
+            raise TypeError("cannot add non ChannelHandler instance")
 
-    @abstractmethod
-    def add_broadcaster(self, location, add):
+    def ping(self, location):
         """
-        send a broadcast request to broadcaster.
-        After calling this method, broadcast messages will be send continually.
-        This method must be overwritten.
+        ping. expect a response including my IP address.
 
-        :param str location: json str where you want to request a broadcast.
-        :param  int add: if 0, request to not to broadcast. request to
-                          broaadcast if others.
+        :param str location: json str where you want to ping.
         """
-        pass
+        telehashbinder.set_stopflag(self.cobj, 1)
+        self.thread.join()
+        telehashbinder.ping(self.cobj, location)
+        self.start_thread()
 
-    @abstractmethod
-    def broadcast(self, location, message):
+    def finalize(self):
         """
-        broadcast a message. This method must be overwritten.
-
-        :param str location: json str where you want to send a broadcast.
-        :param str message: broadcast message.
+         destructor. stop a thread and call telehashbinder's finalization.
         """
-        pass
-
-    @abstractmethod
-    def get_my_location(self):
-        """
-        get json str that represents my location.
-        str depends on the underlaying layer.
-        This method must be overwritten.
-
-        :return: location str. format depends on underlaying layer.
-                 e.g. telehash, etc.
-        """
-        pass
-
-    @abstractmethod
-    def get_my_id(self):
-        """
-        return my id information. format is:
-        jlde3uibwflz4hqnk4zehvj5o5kd4goyqtrwqwhiotw6n4qtrf2a
-
-        :param Object cobj: pointer of StorjTelehash instnace
-                            returned by init()
-        :return: id info.
-        """
-        pass
+        if hasattr(self, "cobj"):
+            telehashbinder.set_stopflag(self.cobj, 1)
+            self.thread.join()
+            telehashbinder.finalize(self.cobj)

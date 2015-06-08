@@ -2,7 +2,6 @@
 #include "e3x.h"
 #include "xht.h"
 #include "util_sys.h"
-#include "tgc.h"
 
 struct e3x_event_struct
 {
@@ -69,7 +68,7 @@ void e3x_event_set(e3x_event_t ev, lob_t event, char *id, uint32_t at)
     event->id = at;
 
     // save id ref if requested
-    if(id) xht_set(ev->ids,id,(void*)event);
+    if(id) xht_set(ev->ids,id,(void*)event, EVENT);
     
     // is it the only one?
     if(!ev->events)

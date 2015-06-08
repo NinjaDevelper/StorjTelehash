@@ -10,7 +10,6 @@
 #include "util_unix.h"
 
 #include "mesh.h"
-#include "tgc.h"
 
 lob_t util_fjson(char *file)
 {
@@ -62,7 +61,7 @@ int util_sock_timeout(int sock, uint32_t ms)
     LOG("timeout setsockopt error %s",strerror(errno));
     return -1;
   }
-    
+
   return sock;
 }
 
