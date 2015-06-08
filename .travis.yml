@@ -18,7 +18,7 @@ before_install:
 
 script:
   - LD_LIBRARY_PATH=libtap ./test
-  - coverage run setup.py test -a "--doctest-modules --pep8 -v tests/"
+  - coverage run --source=storj setup.py test -a "--doctest-modules --pep8 -v tests/"
 
 after_success:
   - coverage report -m
