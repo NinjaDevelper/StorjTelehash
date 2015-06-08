@@ -42,7 +42,7 @@
 #include "StorjTelehash.hpp"
 
 int status=0;
-int count=0;
+int StorjTelehash::instances=0;
 link_t targetLink=NULL;
 char globalIP[3*4+3+1]; ;
 
@@ -359,7 +359,7 @@ StorjTelehash::StorjTelehash(int port ,
     lob_free(p);
     lob_free(id);
     
-    count++;
+    instances++;
 }
 
 ChannelHandlerFactory* StorjTelehash::getChannelHandlerFactory(){
@@ -428,7 +428,7 @@ int StorjTelehash::_isLocalTest(char *adr){
 StorjTelehash::~StorjTelehash(){
 //    net_udp4_free(udp4);
     mesh_free(mesh);
-    if(--count==0){
+    if(--instances==0){
         e3x_cipher_free();
     }
 }	
