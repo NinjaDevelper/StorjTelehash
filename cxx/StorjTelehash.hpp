@@ -111,6 +111,11 @@ private:
     int stopFlag;
 
     /**
+     * number of myself
+     */
+    static int instances;
+
+    /**
      * make id.json, where key and hashname is stored.
      * 
      * @return 0 if failed, others if success.
