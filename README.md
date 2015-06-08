@@ -48,8 +48,8 @@ After that run c:\cygwin\cygwin.bat, where you can install and run StorjTelehash
 
 ## Usage
 
-API Document for storjtelehash , which is concorete implementation of abstract messaging layer by telehash-c ,
-is [here](https://rawgit.com/StorjPlatform/StorjTelehash/master/docs/html/storjtelehash.html)
+API Document for messaging , which is concorete implementation of abstract messaging layer by telehash-c ,
+is [here](https://rawgit.com/StorjPlatform/StorjTelehash/master/docs/html/messaging.html)
 
 API Document for telehashbinder , which is classes/functions used by storjtelehash,
 is [here](https://rawgit.com/StorjPlatform/StorjTelehash/master/docs/html/telehashbinder.html)
