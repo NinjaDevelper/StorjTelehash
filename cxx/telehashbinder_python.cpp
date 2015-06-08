@@ -70,7 +70,7 @@ char *EvaluatePyObject(PyObject *obj, char *str){
         }else{
             if(PyBytes_Check(result)){
                 buffer=PyBytes_AsString(result);
-                rbuf=(char *)malloc(strlen(buffer));
+                rbuf=(char *)malloc(strlen(buffer)+1);
                 strcpy(rbuf,buffer);
             }
         }
