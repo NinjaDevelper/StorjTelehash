@@ -29,19 +29,6 @@ def open_channel(cobj, location, name, handler):
     pass
 
 
-def add_broadcaster(cobj, location, add):
-    """
-    send a broadcast request to broadcaster.
-    After calling this method, broadcast messages will be send continually.
-
-    :param Object cobj: pointer of StorjTelehash instnace returned by init()
-    :param str location: json str where you want to request a broadcast.
-    :param  int add: if 0, request to not to  broadcast. request to broaadcast
-                     if others.
-    """
-    pass
-
-
 def start(cobj):
     """
     star to receive netowrk packets in the current thread..
@@ -86,11 +73,11 @@ def get_my_location(cobj):
 
 def get_my_id(cobj):
     """
-     return my id information. format is:
+    return my id information. format is:
     jlde3uibwflz4hqnk4zehvj5o5kd4goyqtrwqwhiotw6n4qtrf2a
 
-     :param Object cobj: pointer of StorjTelehash instnace returned by init()
-     :return: id info.
+    :param Object cobj: pointer of StorjTelehash instnace returned by init()
+    :return: id info.
      """
     pass
 

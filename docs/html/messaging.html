@@ -26,7 +26,6 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/bizstyle.js"></script>
     <link rel="top" title=".  documentation" href="index.html" />
-    <link rel="next" title="plugin module" href="plugin.html" />
     <link rel="prev" title="telehashbinder module" href="telehashbinder.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
@@ -44,9 +43,6 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="plugin.html" title="plugin module"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
           <a href="telehashbinder.html" title="telehashbinder module"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">.  documentation</a> &raquo;</li> 
@@ -57,9 +53,6 @@
   <h4>Previous topic</h4>
   <p class="topless"><a href="telehashbinder.html"
                         title="previous chapter">telehashbinder module</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="plugin.html"
-                        title="next chapter">plugin module</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -123,81 +116,55 @@ self.next to jump to another seq* methods.</p>
 
 </dd></dl>
 
+<dl class="exception">
+<dt id="messaging.NoSeqError">
+<em class="property">exception </em><code class="descclassname">messaging.</code><code class="descname">NoSeqError</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/messaging.html#NoSeqError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#messaging.NoSeqError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
+<p>Exception Class thrown when no seq is remaiend.
+This instance is called when receving broadcasts and channel packets.</p>
+</dd></dl>
+
 <dl class="class">
-<dt id="messaging.Messaging">
-<em class="property">class </em><code class="descclassname">messaging.</code><code class="descname">Messaging</code><span class="sig-paren">(</span><em>broadcastHandler</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/messaging.html#Messaging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#messaging.Messaging" title="Permalink to this definition">¶</a></dt>
+<dt id="messaging.StorjTelehash">
+<em class="property">class </em><code class="descclassname">messaging.</code><code class="descname">StorjTelehash</code><span class="sig-paren">(</span><em>port=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/messaging.html#StorjTelehash"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#messaging.StorjTelehash" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Abstract layer of Storj messaging.
-Every class handling Storj messaging must inherit it.</p>
+<p>Concrete Messaging layer for Storj Platform in Telehash.
+Everything in telehash-C is not thread safe. So run function after
+stop a thread, and run a thread again in all functions.</p>
 <dl class="attribute">
-<dt id="messaging.Messaging.DESCRIPTION">
-<code class="descname">DESCRIPTION</code><em class="property"> = ''</em><a class="headerlink" href="#messaging.Messaging.DESCRIPTION" title="Permalink to this definition">¶</a></dt>
+<dt id="messaging.StorjTelehash.DESCRIPTION">
+<code class="descname">DESCRIPTION</code><em class="property"> = 'messaging layer in telehach'</em><a class="headerlink" href="#messaging.StorjTelehash.DESCRIPTION" title="Permalink to this definition">¶</a></dt>
 <dd><p>description about this messaging implementation which is
-ued in sublcass.</p>
+used in sublcass.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="messaging.Messaging.add_broadcaster">
-<code class="descname">add_broadcaster</code><span class="sig-paren">(</span><em>location</em>, <em>add</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/messaging.html#Messaging.add_broadcaster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#messaging.Messaging.add_broadcaster" title="Permalink to this definition">¶</a></dt>
-<dd><p>send a broadcast request to broadcaster.
-After calling this method, broadcast messages will be send continually.
-This method must be overwritten.</p>
+<dt id="messaging.StorjTelehash.add_channel_handler">
+<code class="descname">add_channel_handler</code><span class="sig-paren">(</span><em>channel_name</em>, <em>factory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/messaging.html#StorjTelehash.add_channel_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#messaging.StorjTelehash.add_channel_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>add ChannelHandler class object and associate it with a channel name.
+:param Class handler_class: ChannelHandler class to be associated</p>
+<blockquote>
+<div>with</div></blockquote>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>location</strong> (<em>str</em>) &#8211; json str where you want to request a broadcast.</li>
-<li><strong>add</strong> (<em>int</em>) &#8211; if 0, request to not to broadcast. request to
-broaadcast if others.</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>factory</strong> (<em>method</em>) &#8211; factory method called  when creating
+handler_class instnace.</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="method">
-<dt id="messaging.Messaging.add_channel_handler">
-<code class="descname">add_channel_handler</code><span class="sig-paren">(</span><em>channel_name</em>, <em>factory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/messaging.html#Messaging.add_channel_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#messaging.Messaging.add_channel_handler" title="Permalink to this definition">¶</a></dt>
-<dd><p>add ChannelHandler class object and associate it with a channel name.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>handler_class</strong> (<em>Class</em>) &#8211; ChannelHandler class to be associated
-with</li>
-<li><strong>factory</strong> (<em>method</em>) &#8211; factory method called  when creating
-handler_class instnace.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
+<dt id="messaging.StorjTelehash.finalize">
+<code class="descname">finalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/messaging.html#StorjTelehash.finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#messaging.StorjTelehash.finalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>destructor. stop a thread and call telehashbinder&#8217;s finalization.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="messaging.Messaging.broadcast">
-<code class="descname">broadcast</code><span class="sig-paren">(</span><em>location</em>, <em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/messaging.html#Messaging.broadcast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#messaging.Messaging.broadcast" title="Permalink to this definition">¶</a></dt>
-<dd><p>broadcast a message. This method must be overwritten.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>location</strong> (<em>str</em>) &#8211; json str where you want to send a broadcast.</li>
-<li><strong>message</strong> (<em>str</em>) &#8211; broadcast message.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="messaging.Messaging.get_channel_handler">
-<code class="descname">get_channel_handler</code><span class="sig-paren">(</span><em>channel_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/messaging.html#Messaging.get_channel_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#messaging.Messaging.get_channel_handler" title="Permalink to this definition">¶</a></dt>
+<dt id="messaging.StorjTelehash.get_channel_handler">
+<code class="descname">get_channel_handler</code><span class="sig-paren">(</span><em>channel_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/messaging.html#StorjTelehash.get_channel_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#messaging.StorjTelehash.get_channel_handler" title="Permalink to this definition">¶</a></dt>
 <dd><p>get ChannelHandler instance that is associate it with a channel_name.
 This method is called when receviing channel requests.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -211,27 +178,47 @@ This method is called when receviing channel requests.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="messaging.Messaging.get_my_location">
-<code class="descname">get_my_location</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/messaging.html#Messaging.get_my_location"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#messaging.Messaging.get_my_location" title="Permalink to this definition">¶</a></dt>
-<dd><p>get json str that represents my location.
-str depends on the underlaying layer.
-This method must be overwritten.</p>
+<dt id="messaging.StorjTelehash.get_my_id">
+<code class="descname">get_my_id</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/messaging.html#StorjTelehash.get_my_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#messaging.StorjTelehash.get_my_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>return my id information. format is:
+jlde3uibwflz4hqnk4zehvj5o5kd4goyqtrwqwhiotw6n4qtrf2a</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">location str. format depends on underlaying layer.
-e.g. telehash, etc.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cobj</strong> (<em>Object</em>) &#8211; pointer of StorjTelehash instnace returned
+by init()</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">id info.</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="method">
-<dt id="messaging.Messaging.open_channel">
-<code class="descname">open_channel</code><span class="sig-paren">(</span><em>location</em>, <em>name</em>, <em>handler</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/messaging.html#Messaging.open_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#messaging.Messaging.open_channel" title="Permalink to this definition">¶</a></dt>
-<dd><p>open a channel with a handler.
-This method must be overwritten.</p>
+<dt id="messaging.StorjTelehash.get_my_location">
+<code class="descname">get_my_location</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/messaging.html#StorjTelehash.get_my_location"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#messaging.StorjTelehash.get_my_location" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>return my location information. format is:</dt>
+<dd>{&#8220;keys&#8221;:{&#8220;1a&#8221;:&#8221;al45izsjxe2sikv7mc6jpnwywybbkqvsou&#8221;},</dd>
+</dl>
+<p>paths&#8221;:[{&#8220;type&#8221;:&#8221;udp4&#8221;,&#8221;ip&#8221;:&#8221;127.0.0.1&#8221;,&#8221;port&#8221;:1234}]</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">return:</th><td class="field-body">location info.</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="messaging.StorjTelehash.open_channel">
+<code class="descname">open_channel</code><span class="sig-paren">(</span><em>location</em>, <em>name</em>, <em>handler</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/messaging.html#StorjTelehash.open_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#messaging.StorjTelehash.open_channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>open a channel with a handler.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -247,14 +234,26 @@ This method must be overwritten.</p>
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="messaging.StorjTelehash.ping">
+<code class="descname">ping</code><span class="sig-paren">(</span><em>location</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/messaging.html#StorjTelehash.ping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#messaging.StorjTelehash.ping" title="Permalink to this definition">¶</a></dt>
+<dd><p>ping. expect a response including my IP address.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>location</strong> (<em>str</em>) &#8211; json str where you want to ping.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="exception">
-<dt id="messaging.NoSeqError">
-<em class="property">exception </em><code class="descclassname">messaging.</code><code class="descname">NoSeqError</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/messaging.html#NoSeqError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#messaging.NoSeqError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
-<p>Exception Class thrown when no seq is remaiend.
-This instance is called when receving broadcasts and channel packets.</p>
+<dl class="method">
+<dt id="messaging.StorjTelehash.start_thread">
+<code class="descname">start_thread</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/messaging.html#StorjTelehash.start_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#messaging.StorjTelehash.start_thread" title="Permalink to this definition">¶</a></dt>
+<dd><p>star to receive netowrk packets in a thread.</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -274,9 +273,6 @@ This instance is called when receving broadcasts and channel packets.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="right" >
-          <a href="plugin.html" title="plugin module"
-             >next</a> |</li>
         <li class="right" >
           <a href="telehashbinder.html" title="telehashbinder module"
              >previous</a> |</li>

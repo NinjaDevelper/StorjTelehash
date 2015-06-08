@@ -16,22 +16,6 @@ recievers must register handlers for them to act to received messages because
 they don't know when messages come in. 
 So there is no functions to send() and recv() directly.
 
-There are two types of message in Messaging layer. One is broadcast, another
-is channel message.
-
-### Broadcast
-Everyone who use messaging layer must
-specify a broadcast handler when initialing messaging class. 
-First he would call ```add_broadcaster(receiver)``` function so that the ```receiver```
-would register him to send messages that someone broadcasted.
-
-When you 
-broadcast a message, receiver of this message would analyze this message by 
-the handler at first. Receiver would check this message, e.g. that sender 
-didn't send messages too much, or  that this message is what receiver wants 
-to know, etc. If the receiver thinks it should be broadcasted, the handler
-would return a string , and messaging layer would broadcast this string to registered member.
-
 ### Channel Message
 
 Channel message is used for general purpose. 
@@ -101,22 +85,8 @@ class ChannelReceiver(ChannelHandler):
         """
         return packet
 
-def broadcast_handler(self, packet):
-    """
-    handler called when receiving broadcasts.
-    packet: received message
-    """
-    #do something 
-    return packet
-
-# initiate telehash as port=1234 and register broadcast handler
-s = StorjTelehash(broadcast_handler, 1234)
-# request locationA to broadcast to me.
-s.add_broadcaster(locationA, 1)
-
-
-# broadcast a messagt to locationC
-s.broadcast(locationC, '{"service":"farming0"}')
+# initiate telehash as port=1234
+s = StorjTelehash(1234)
 
 # register channel handler with 'one_service' channel.
 #register a Class, not an instance.

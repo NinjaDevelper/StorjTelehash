@@ -11,10 +11,8 @@ Contents:
 .. toctree::
    :maxdepth: 4
 
-   storjtelehash
    telehashbinder
    messaging
-   plugin
 
 
 Indices and tables

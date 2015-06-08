@@ -99,11 +99,14 @@
 <span class="c"># ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE</span>
 <span class="c"># POSSIBILITY OF SUCH DAMAGE.</span>
 
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">import</span> <span class="nn">types</span>
-<span class="kn">import</span> <span class="nn">pkgutil</span>
-
+<span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="c"># from . import telehashbinder</span>
+<span class="kn">import</span> <span class="nn">telehashbinder</span> <span class="c">#for creating document</span>
+
 <span class="n">log_fmt</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%(filename)s</span><span class="s">:</span><span class="si">%(lineno)d</span><span class="s"> </span><span class="si">%(funcName)s</span><span class="s">() </span><span class="si">%(message)s</span><span class="s">&#39;</span>
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="n">log_fmt</span><span class="p">)</span>
 
@@ -187,32 +190,62 @@
         <span class="k">return</span> <span class="n">r</span>
 
 </div></div>
-<div class="viewcode-block" id="Messaging"><a class="viewcode-back" href="../messaging.html#messaging.Messaging">[docs]</a><span class="k">class</span> <span class="nc">Messaging</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="StorjTelehash"><a class="viewcode-back" href="../messaging.html#messaging.StorjTelehash">[docs]</a><span class="k">class</span> <span class="nc">StorjTelehash</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Abstract layer of Storj messaging.</span>
-<span class="sd">    Every class handling Storj messaging must inherit it.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
-
-    <span class="n">DESCRIPTION</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    description about this messaging implementation which is</span>
-<span class="sd">    ued in sublcass.</span>
+<span class="sd">    Concrete Messaging layer for Storj Platform in Telehash.</span>
+<span class="sd">    Everything in telehash-C is not thread safe. So run function after</span>
+<span class="sd">    stop a thread, and run a thread again in all functions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">broadcastHandler</span><span class="p">,</span> <span class="o">**</span><span class="n">keywords</span><span class="p">):</span>
+    <span class="n">DESCRIPTION</span> <span class="o">=</span> <span class="s">&#39;messaging layer in telehach&#39;</span>
+    <span class="sd">&quot;&quot;&quot; description about this messaging implementation which is</span>
+<span class="sd">    used in sublcass.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">   　　　　　init.</span>
+<span class="sd">        init</span>
 
-<span class="sd">       :param ChannelHandler broadcastHandler: a received packet to be handled.</span>
-<span class="sd">       do nothing to this parameter.</span>
+<span class="sd">        :param int port: port number to be listened packets.</span>
+<span class="sd">                                  if 0, port number is seletcted randomly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cobj</span> <span class="o">=</span> <span class="n">telehashbinder</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_channel_handler</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_thread</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel_factories</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="Messaging.add_channel_handler"><a class="viewcode-back" href="../messaging.html#messaging.Messaging.add_channel_handler">[docs]</a>    <span class="k">def</span> <span class="nf">add_channel_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">factory</span><span class="p">):</span>
+<div class="viewcode-block" id="StorjTelehash.get_my_location"><a class="viewcode-back" href="../messaging.html#messaging.StorjTelehash.get_my_location">[docs]</a>    <span class="k">def</span> <span class="nf">get_my_location</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        return my location information. format is:</span>
+<span class="sd">         {&quot;keys&quot;:{&quot;1a&quot;:&quot;al45izsjxe2sikv7mc6jpnwywybbkqvsou&quot;},</span>
+<span class="sd">        paths&quot;:[{&quot;type&quot;:&quot;udp4&quot;,&quot;ip&quot;:&quot;127.0.0.1&quot;,&quot;port&quot;:1234}]</span>
+
+<span class="sd">         :return: location info.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">telehashbinder</span><span class="o">.</span><span class="n">get_my_location</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cobj</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="StorjTelehash.get_my_id"><a class="viewcode-back" href="../messaging.html#messaging.StorjTelehash.get_my_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_my_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        return my id information. format is:</span>
+<span class="sd">        jlde3uibwflz4hqnk4zehvj5o5kd4goyqtrwqwhiotw6n4qtrf2a</span>
+
+<span class="sd">        :param Object cobj: pointer of StorjTelehash instnace returned</span>
+<span class="sd">                            by init()</span>
+<span class="sd">        :return: id info.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">telehashbinder</span><span class="o">.</span><span class="n">get_my_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cobj</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="StorjTelehash.start_thread"><a class="viewcode-back" href="../messaging.html#messaging.StorjTelehash.start_thread">[docs]</a>    <span class="k">def</span> <span class="nf">start_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;star to receive netowrk packets in a thread. &quot;&quot;&quot;</span>
+
+        <span class="n">telehashbinder</span><span class="o">.</span><span class="n">set_stopflag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cobj</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+            <span class="n">target</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">telehashbinder</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cobj</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="StorjTelehash.add_channel_handler"><a class="viewcode-back" href="../messaging.html#messaging.StorjTelehash.add_channel_handler">[docs]</a>    <span class="k">def</span> <span class="nf">add_channel_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">factory</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        add ChannelHandler class object and associate it with a channel name.</span>
-
 <span class="sd">        :param Class handler_class: ChannelHandler class to be associated</span>
 <span class="sd">                                    with</span>
 <span class="sd">        :param method factory: factory method called  when creating</span>
@@ -220,7 +253,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel_factories</span><span class="p">[</span><span class="n">channel_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">factory</span>
 </div>
-<div class="viewcode-block" id="Messaging.get_channel_handler"><a class="viewcode-back" href="../messaging.html#messaging.Messaging.get_channel_handler">[docs]</a>    <span class="k">def</span> <span class="nf">get_channel_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">):</span>
+<div class="viewcode-block" id="StorjTelehash.get_channel_handler"><a class="viewcode-back" href="../messaging.html#messaging.StorjTelehash.get_channel_handler">[docs]</a>    <span class="k">def</span> <span class="nf">get_channel_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        get ChannelHandler instance that is associate it with a channel_name.</span>
 <span class="sd">        This method is called when receviing channel requests.</span>
@@ -236,52 +269,42 @@
 
         <span class="k">return</span> <span class="n">h</span><span class="o">.</span><span class="n">handle</span>
 </div>
-    <span class="nd">@abstractmethod</span>
-<div class="viewcode-block" id="Messaging.open_channel"><a class="viewcode-back" href="../messaging.html#messaging.Messaging.open_channel">[docs]</a>    <span class="k">def</span> <span class="nf">open_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
+<div class="viewcode-block" id="StorjTelehash.open_channel"><a class="viewcode-back" href="../messaging.html#messaging.StorjTelehash.open_channel">[docs]</a>    <span class="k">def</span> <span class="nf">open_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        open a channel with a handler.</span>
-<span class="sd">        This method must be overwritten.</span>
 
 <span class="sd">        :param str location: json str where you want to open a channel.</span>
 <span class="sd">        :param str name: channel name that you want to open .</span>
 <span class="sd">        :param ChannelHandler handler: channel handler.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">ChannelHandler</span><span class="p">):</span>
+            <span class="n">telehashbinder</span><span class="o">.</span><span class="n">set_stopflag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cobj</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+            <span class="n">telehashbinder</span><span class="o">.</span><span class="n">open_channel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cobj</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span>
+                                        <span class="n">handler</span><span class="o">.</span><span class="n">handle</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_thread</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;cannot add non ChannelHandler instance&quot;</span><span class="p">)</span>
 </div>
-    <span class="nd">@abstractmethod</span>
-<div class="viewcode-block" id="Messaging.add_broadcaster"><a class="viewcode-back" href="../messaging.html#messaging.Messaging.add_broadcaster">[docs]</a>    <span class="k">def</span> <span class="nf">add_broadcaster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">add</span><span class="p">):</span>
+<div class="viewcode-block" id="StorjTelehash.ping"><a class="viewcode-back" href="../messaging.html#messaging.StorjTelehash.ping">[docs]</a>    <span class="k">def</span> <span class="nf">ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        send a broadcast request to broadcaster.</span>
-<span class="sd">        After calling this method, broadcast messages will be send continually.</span>
-<span class="sd">        This method must be overwritten.</span>
+<span class="sd">        ping. expect a response including my IP address.</span>
 
-<span class="sd">        :param str location: json str where you want to request a broadcast.</span>
-<span class="sd">        :param  int add: if 0, request to not to broadcast. request to</span>
-<span class="sd">                          broaadcast if others.</span>
+<span class="sd">        :param str location: json str where you want to ping.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
+        <span class="n">telehashbinder</span><span class="o">.</span><span class="n">set_stopflag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cobj</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="n">telehashbinder</span><span class="o">.</span><span class="n">ping</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cobj</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_thread</span><span class="p">()</span>
 </div>
-    <span class="nd">@abstractmethod</span>
-<div class="viewcode-block" id="Messaging.broadcast"><a class="viewcode-back" href="../messaging.html#messaging.Messaging.broadcast">[docs]</a>    <span class="k">def</span> <span class="nf">broadcast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<div class="viewcode-block" id="StorjTelehash.finalize"><a class="viewcode-back" href="../messaging.html#messaging.StorjTelehash.finalize">[docs]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        broadcast a message. This method must be overwritten.</span>
-
-<span class="sd">        :param str location: json str where you want to send a broadcast.</span>
-<span class="sd">        :param str message: broadcast message.</span>
+<span class="sd">         destructor. stop a thread and call telehashbinder&#39;s finalization.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
-</div>
-    <span class="nd">@abstractmethod</span>
-<div class="viewcode-block" id="Messaging.get_my_location"><a class="viewcode-back" href="../messaging.html#messaging.Messaging.get_my_location">[docs]</a>    <span class="k">def</span> <span class="nf">get_my_location</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        get json str that represents my location.</span>
-<span class="sd">        str depends on the underlaying layer.</span>
-<span class="sd">        This method must be overwritten.</span>
-
-<span class="sd">        :return: location str. format depends on underlaying layer.</span>
-<span class="sd">                 e.g. telehash, etc.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div></div>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&quot;cobj&quot;</span><span class="p">):</span>
+            <span class="n">telehashbinder</span><span class="o">.</span><span class="n">set_stopflag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cobj</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+            <span class="n">telehashbinder</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cobj</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
