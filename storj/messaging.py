@@ -38,6 +38,7 @@ from . import telehashbinder
 log_fmt = '%(filename)s:%(lineno)d %(funcName)s() %(message)s'
 logging.basicConfig(level=logging.DEBUG, format=log_fmt)
 
+
 class NoSeqError(Exception):
     """
     Exception Class thrown when no seq is remaiend.
@@ -117,7 +118,7 @@ class ChannelHandler(object):
         return r
 
 
-class StorjTelehash(Object):
+class StorjTelehash(object):
     """
     Concrete Messaging layer for Storj Platform in Telehash.
     Everything in telehash-C is not thread safe. So run function after
@@ -129,19 +130,16 @@ class StorjTelehash(Object):
     used in sublcass.
     """
 
-    def __init__(self, port = 0):
+    def __init__(self, port=0):
         """
         init
 
         :param int port: port number to be listened packets.
                                   if 0, port number is seletcted randomly.
         """
-        if broadcast_handler is not None and\
-           not isinstance(broadcast_handler, types.MethodType):
-            raise TypeError("cannot add non method handler.")
-
         self.cobj = telehashbinder.init(port, self.get_channel_handler)
         self.start_thread()
+        self.channel_factories = {}
 
     def get_my_location(self):
         """
@@ -172,6 +170,16 @@ class StorjTelehash(Object):
             target=lambda: telehashbinder.start(self.cobj))
         self.thread.setDaemon(True)
         self.thread.start()
+
+    def add_channel_handler(self, channel_name, factory):
+        """
+        add ChannelHandler class object and associate it with a channel name.
+        :param Class handler_class: ChannelHandler class to be associated
+                                    with
+        :param method factory: factory method called  when creating
+                               handler_class instnace.
+        """
+        self.channel_factories[channel_name] = factory
 
     def get_channel_handler(self, channel_name):
         """
@@ -205,6 +213,17 @@ class StorjTelehash(Object):
             self.start_thread()
         else:
             raise TypeError("cannot add non ChannelHandler instance")
+
+    def ping(self, location):
+        """
+        ping. expect a response including my IP address.
+
+        :param str location: json str where you want to ping.
+        """
+        telehashbinder.set_stopflag(self.cobj, 1)
+        self.thread.join()
+        telehashbinder.ping(self.cobj, location)
+        self.start_thread()
 
     def finalize(self):
         """

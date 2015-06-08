@@ -33,14 +33,15 @@ import pytest
 import time
 import logging
 
-from storj.messaging imoprt ChannelHandler
-from storj.messaging imoprt StorjTelehash
+from storj.messaging import ChannelHandler
+from storj.messaging import StorjTelehash
 
 log_fmt = '%(filename)s:%(lineno)d %(funcName)s() %(message)s'
 logging.basicConfig(level=logging.DEBUG, format=log_fmt)
 
 counter_opener = 0
 counter_receiver = 0
+
 
 class CalledChannel(ChannelHandler):
 
@@ -129,9 +130,9 @@ class ChannelReceiverNG(ChannelHandler):
 
 class TestStorjTelehash(object):
     def setup(self):
-        self.m2 = cls()
-        self.m3 = cls(9999)
-        self.m4 = cls(-9999)
+        self.m2 = StorjTelehash()
+        self.m3 = StorjTelehash(-9999)
+        self.m4 = StorjTelehash(-9999)
 
         id = self.m2.get_my_id()
         assert len(id) == 52
@@ -149,12 +150,13 @@ class TestStorjTelehash(object):
         self.m3.ping(self.location)
         loc = json.loads(self.m3.get_my_location())
         assert len(loc['paths'][0]['ip']) > 8
+        time.sleep(5)
 
         self.status = 0
         self.m2.add_channel_handler('counter_test',
                                     (lambda: ChannelReceiver()))
         self.m3.open_channel(self.location, 'counter_test', ChannelOpener())
-        time.sleep(2)
+        time.sleep(5)
         assert counter_opener == 4
         assert counter_receiver == 3
 
@@ -162,7 +164,7 @@ class TestStorjTelehash(object):
         self.m2.add_channel_handler('counter_testNG', ChannelReceiverNG)
         self.m3.open_channel(self.location, 'counter_testNG',
                              ChannelOpener())
-        time.sleep(2)
+        time.sleep(5)
         logging.debug('should to raise exception in another thread,\
          but cannot catch')
 
