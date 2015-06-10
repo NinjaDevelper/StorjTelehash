@@ -88,7 +88,7 @@ telehash_src = [
 module = Extension('storj.telehashbinder',
                    sources = ['cxx/telehashbinder_python.cpp',
                     'cxx/StorjTelehash.cpp'] + telehash_src,
-                    extra_compile_args = ['-fpermissive', '-DDEBUG'],
+                    extra_compile_args = ['-DDEBUG'],
                     include_dirs=['telehash-c/unix', 'telehash-c/include',
                                  'telehash-c/lib', 'cxx'],
                    )
